@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "IO/System/EventLog.hpp"
+#include "ObservableObject.hpp"
 
 namespace sw::game {
 
@@ -17,13 +17,11 @@ namespace sw::game {
         uint32_t maxRange {};
     };
 
-    class GameUnit  {
+    class GameUnit : public ObservableObject {
     public:
         explicit GameUnit(UnitData unitData);
 
         void move(uint32_t targetX, uint32_t targetY);
-
-        void setEventListener(const std::shared_ptr<EventLog>& eventListener);
 
         [[nodiscard]] uint32_t getId() const noexcept;
         [[nodiscard]] const std::pair<uint32_t, uint32_t>& getPosition() const noexcept;
@@ -40,7 +38,6 @@ namespace sw::game {
         UnitData unitData;
         std::pair<std::weak_ptr<GameUnit>, int> enemyAndDistance;
         int damage {};
-        std::shared_ptr<EventLog> eventListener;
 
         //std::vector<std::shared_ptr<Attack>> attacks;
         //std::shared_ptr<Attack> currentAttack;

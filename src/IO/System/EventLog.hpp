@@ -3,6 +3,7 @@
 #include <iostream>
 #include <typeindex>
 #include <unordered_map>
+#include "IO/EventLogs/Event.hpp"
 
 namespace sw
 {
@@ -26,14 +27,15 @@ namespace sw
 			}
 		}
 
-		template <class TEvent>
-		void log(TEvent&& event)
+        template<class TEvent>
+		void log(sw::io::Event<TEvent>* event)
 		{
-			auto handler = _handlers.find(std::type_index(typeid(TEvent)));
+            auto tmp = event->getTypeIndex();
+			auto handler = _handlers.find(event->getTypeIndex());
 			if (handler == _handlers.end())
-				throw std::runtime_error("Unknown event: " + std::string(TEvent::Name));
+				throw std::runtime_error("Unknown event: ");
 
-			handler->second(&event);
+			handler->second(event->getEventType());
 		}
 	};
 }

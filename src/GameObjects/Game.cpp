@@ -15,6 +15,8 @@
 #include <IO/EventLogs/UnitDied.hpp>
 #include <IO/EventLogs/UnitAttacked.hpp>
 
+#include "ObservableObject.hpp"
+
 void sw::game::Game::initGame(std::ifstream& fileInit) {
     io::CommandParser parser;
     parser.add<io::CreateMap>(
@@ -44,8 +46,9 @@ void sw::game::Game::initGame(std::ifstream& fileInit) {
 void sw::game::Game::setMap(std::unique_ptr<GameMap>&& newMap) noexcept
 {
     map = std::move(newMap);
-    map->setEventListener(eventListner);
-    eventListner->log(io::MapCreated{ static_cast<uint32_t>(map->getFilledMap().size()), static_cast<uint32_t>(map->getFilledMap()[0].size()) });
+    map->setObserver(eventListner);
+    auto event = io::MapCreated{ static_cast<uint32_t>(map->getFilledMap().size()), static_cast<uint32_t>(map->getFilledMap()[0].size()) };
+    map->pushEvent(&event);
 }
 
 void sw::game::Game::march(uint32_t id, uint32_t x, uint32_t y) {

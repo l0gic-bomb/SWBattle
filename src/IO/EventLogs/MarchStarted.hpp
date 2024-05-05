@@ -1,9 +1,13 @@
 #include <cstdint>
+#include "Event.hpp"
 
 namespace sw::io
 {
-	struct MarchStarted {
-		constexpr static const char* Name = "MARCH_STARTED";
+    struct MarchStarted : public Event<MarchStarted> {
+        MarchStarted(uint32_t id, const unsigned int x, const unsigned int y, uint32_t targetX, uint32_t targetY)
+            : unitId(id), x(x), y(y), targetX(targetX), targetY(targetY) {}
+
+        constexpr static const char* Name = "MARCH_STARTED";
 
 		uint32_t unitId {};
 		uint32_t x {};

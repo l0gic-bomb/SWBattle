@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include <memory>
 
-#include "IO/System/EventLog.hpp"
+#include "ObservableObject.hpp"
 
 namespace sw::game {
     class GameUnit;
-    class GameMap {
+    class GameMap : public ObservableObject {
     public:
         explicit GameMap(uint32_t width, uint32_t height);
 
@@ -16,7 +16,6 @@ namespace sw::game {
 
         void marchOnMap(uint32_t unitId, uint32_t targetX, uint32_t targetY);
         void addUnit(std::shared_ptr<GameUnit> &&unit, const std::string& name);
-        void setEventListener(const std::shared_ptr<EventLog>& eventListener);
         void removeDeadUnits();
 
         [[nodiscard]] std::size_t getCountUnit() const noexcept;
@@ -26,6 +25,5 @@ namespace sw::game {
     private:
         std::vector<std::vector<bool>> map;
         std::unordered_map<uint32_t, std::shared_ptr<GameUnit>> units;
-        std::shared_ptr<EventLog> eventListener;
     };
 }

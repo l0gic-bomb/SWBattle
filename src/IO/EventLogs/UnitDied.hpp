@@ -1,10 +1,15 @@
 #include <cstdint>
 #include <string>
 
+#include "Event.hpp"
+
 namespace sw::io
 {
-	struct UnitDied {
-		constexpr static const char* Name = "UNIT_DIED";
+	struct UnitDied : public Event<UnitDied> {
+        UnitDied(uint32_t id)
+            : unitId(id) {}
+
+        constexpr static const char* Name = "UNIT_DIED";
 
 		uint32_t unitId {};
 

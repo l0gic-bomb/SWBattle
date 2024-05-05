@@ -1,10 +1,15 @@
 #include <cstdint>
 #include <string>
+#include "Event.hpp"
+
 
 namespace sw::io
 {
-	struct UnitSpawned {
-		constexpr static const char* Name = "UNIT_SPAWNED";
+	struct UnitSpawned : public Event<UnitSpawned> {
+        UnitSpawned(uint32_t id, std::string type, uint32_t x, uint32_t y)
+            : unitId(id), unitType(std::move(type)), x(x), y(y) {}
+
+        constexpr static const char* Name = "UNIT_SPAWNED";
 
 		uint32_t unitId {};
 		std::string unitType {};

@@ -17,18 +17,16 @@ uint32_t sw::game::GameUnit::getId() const noexcept {
 
 void sw::game::GameUnit::move(uint32_t targetX, uint32_t targetY) {
     unitData.position = {targetX,targetY};
-    eventListener->log(io::UnitMoved{ unitData.unitId, targetX, targetY });
-}
-
-void sw::game::GameUnit::setEventListener(const std::shared_ptr<EventLog>& listener) {
-    eventListener = listener;
+    auto event = io::UnitMoved{unitData.unitId, targetX, targetY };
+    pushEvent(&event);
 }
 
 void sw::game::GameUnit::makeDamage(int enemyDamage) noexcept {
     unitData.hp -= enemyDamage;
     if (unitData.hp <= 0 ) {
         unitData.hp = 0;
-        eventListener->log(io::UnitDied{ unitData.unitId });
+        auto event = io::UnitDied{ unitData.unitId };
+        pushEvent(&event);
     }
 }
 
@@ -62,7 +60,8 @@ void sw::game::GameUnit::attack(const std::shared_ptr<GameUnit>& nearestEnemy) {
             enemy.reset();
             return;
         }
-        eventListener->log( io::UnitAttacked{ unitData.unitId, enemy.lock()->getId(), static_cast<uint32_t>(damage), enemy.lock()->getHp() });
+        auto event =  io::UnitAttacked{ unitData.unitId, enemy.lock()->getId(), static_cast<uint32_t>(damage), enemy.lock()->getHp()};
+        pushEvent(&event);
         enemy.lock()->makeDamage(damage);
     }
 }

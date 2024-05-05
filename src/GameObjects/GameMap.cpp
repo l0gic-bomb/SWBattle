@@ -20,9 +20,10 @@ void sw::game::GameMap::addUnit(std::shared_ptr<GameUnit> &&unit, const std::str
     map[unit->getPosition().first][unit->getPosition().second] = true;
     const auto id = unit->getId();
     units[id] = std::move(unit);
-    units[id]->setEventListener(eventListener);
-    eventListener->log(io::UnitSpawned{ units[id]->getId(), name,
-                                        units[id]->getPosition().first, units[id]->getPosition().second });
+    units[id]->setObserver(getEventLog());
+    auto event = io::UnitSpawned{ units[id]->getId(), name,
+                                  units[id]->getPosition().first, units[id]->getPosition().second };
+    pushEvent(&event);
 }
 
 void sw::game::GameMap::marchOnMap(uint32_t unitId, uint32_t targetX, uint32_t targetY) {
@@ -31,12 +32,14 @@ void sw::game::GameMap::marchOnMap(uint32_t unitId, uint32_t targetX, uint32_t t
     if (units.count(unitId) == 0)
         return;
 
-    eventListener->log(io::MarchStarted{ unitId, units[unitId]->getPosition().first, units[unitId]->getPosition().second,
-                                         targetX, targetY });
+    auto eventMarchStarted = io::MarchStarted{ unitId, units[unitId]->getPosition().first, units[unitId]->getPosition().second,
+                                   targetX, targetY };
+    pushEvent(&eventMarchStarted);
     map[units[unitId]->getPosition().first][units[unitId]->getPosition().second] = false;
     map[targetX][targetY] = true;
     units[unitId]->move(targetX, targetY);
-    eventListener->log(io::MarchEnded{ unitId, targetX, targetY });
+    auto eventMarchEnded = io::MarchEnded{ unitId, targetX, targetY };
+    pushEvent(&eventMarchEnded);
 }
 
 void sw::game::GameMap::update() {
@@ -81,9 +84,5 @@ void sw::game::GameMap::removeDeadUnits() {
     if (ids.empty()) return;
     for (auto id : ids)
         units.erase(id);
-}
-
-void sw::game::GameMap::setEventListener(const std::shared_ptr<EventLog>& listener) {
-    eventListener = listener;
 }
 
